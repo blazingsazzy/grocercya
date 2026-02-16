@@ -2,6 +2,7 @@ import React from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { AppNavigator } from "./src/navigation/AppNavigator";
 
+
 import {
   useFonts,
   Poppins_400Regular,
@@ -26,6 +27,7 @@ export default function App() {
   }
 
   return (
+     
     <NavigationContainer
       theme={{
         ...DefaultTheme,
@@ -34,5 +36,6 @@ export default function App() {
     >
       <AppNavigator />
     </NavigationContainer>
+    
   );
 }

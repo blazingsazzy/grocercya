@@ -20,7 +20,9 @@ export default function SplashScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="light-content"
+  backgroundColor="#0B0B0B"
+  translucent={false} />
       <LogoSvg width={180} height={180} />
     </View>
   );

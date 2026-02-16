@@ -1,4 +1,8 @@
 import React, { useMemo, useRef, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../navigation/AppNavigator";
+
 import {
   Alert,
   Dimensions,
@@ -31,6 +35,9 @@ type Slide = {
 };
 
 export default function OnboardingScreen() {
+  const navigation =
+  useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const slides: Slide[] = useMemo(
     () => [
       {
@@ -92,7 +99,7 @@ export default function OnboardingScreen() {
   };
 
   const onGetStarted = () => {
-    Alert.alert("Onboarding completed");
+    navigation.replace("GetStarted");
   };
 
   const renderItem = ({ item }: { item: Slide }) => {
