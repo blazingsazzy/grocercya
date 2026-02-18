@@ -3,13 +3,13 @@ import React from "react";
 import { View, StyleSheet, Pressable, StatusBar } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import AppText from "../components/AppText";
-import { colors, radius, spacing } from "../themes/themes";
+import AppText from "@/components/AppText";
+import { colors, radius, spacing } from "@/themes/themes";
 
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../navigation/AppNavigator";
+import type { RootStackParamList } from "@/navigation/AppNavigator";
 
-import NotificationSvg from "../assets/svg/notification.svg";
+import NotificationSvg from "@/assets/svg/notification.svg";
 
 type Props = NativeStackScreenProps<RootStackParamList, "EnableNotification">;
 

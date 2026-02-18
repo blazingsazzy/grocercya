@@ -13,10 +13,10 @@ import PhoneInput from "react-native-phone-number-input";
 import CountryPicker, { Country } from "react-native-country-picker-modal";
 import { AsYouType, parsePhoneNumberFromString } from "libphonenumber-js";
 
-import AppText from "../components/AppText";
-import { colors, radius, spacing } from "../themes/themes";
+import AppText from "@/components/AppText";
+import { colors, radius, spacing } from "@/themes/themes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../navigation/AppNavigator";
+import type { RootStackParamList } from "@/navigation/AppNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "GetStarted">;
 

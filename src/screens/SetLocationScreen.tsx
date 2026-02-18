@@ -8,13 +8,13 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import AppText from "../components/AppText";
-import { colors, radius, spacing } from "../themes/themes";
+import { colors, radius, spacing } from "@/themes/themes";
 
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../navigation/AppNavigator";
+import type { RootStackParamList } from "@/navigation/AppNavigator";
 
 // IMPORT SVG
-import GroupSvg from "../assets/svg/group.svg";
+import GroupSvg from "@/assets/svg/group.svg";
 
 type Props = NativeStackScreenProps<RootStackParamList, "SetLocation">;
 

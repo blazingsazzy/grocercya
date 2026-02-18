@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../navigation/AppNavigator";
+import type { RootStackParamList } from "@/navigation/AppNavigator";
 
 import {
   Alert,
@@ -15,67 +15,21 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors, radius, spacing, typography } from "../themes/themes";
-
-import AppText from "../components/AppText";
-
-// SVGs (hyphen filenames — keep exact paths + quotes)
-import FullTrolleySvg from "../assets/svg/full-trolley.svg";
-import DeliveryTruckSvg from "../assets/svg/delivery-truck.svg";
-import BigBoxSvg from "../assets/svg/big-box.svg";
-import CashRegisterSvg from "../assets/svg/cash-register.svg";
+import { colors, radius, spacing, typography } from "@/themes/themes";
+import { ONBOARDING_SLIDES, type Slide } from "@/constants/onboardingSlides";
+import AppText from "@/components/AppText";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-type Slide = {
-  key: string;
-  title: string;
-  subtitle: string;
-  Illustration: React.ComponentType<{ width?: number; height?: number }>;
-};
 
 export default function OnboardingScreen() {
   const navigation =
   useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const slides: Slide[] = useMemo(
-    () => [
-      {
-        key: "1",
-        title: "Welcome to Grocercya",
-        subtitle:
-          "Get your grocery needs at your service within a minute, fast, efficient, and convenient.",
-        Illustration: FullTrolleySvg,
-      },
-      {
-        key: "2",
-        title: "Get any packages delivered",
-        subtitle:
-          "Get all your items conveniently, ensuring everything you need arrive without any hassle.",
-        Illustration: DeliveryTruckSvg,
-      },
-      {
-        key: "3",
-        title: "Protected package delivery.",
-        subtitle:
-          "Your groceries are carefully packaged to ensure they arrive safely and in perfect condition.",
-        Illustration: BigBoxSvg,
-      },
-      {
-        key: "4",
-        title: "Best price guaranteed",
-        subtitle:
-          "Allowing you to stock up on your favorite items while staying within your budget.",
-        Illustration: CashRegisterSvg,
-      },
-    ],
-    []
-  );
-
+  
   const listRef = useRef<FlatList<Slide>>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const isLast = activeIndex === slides.length - 1;
+  const isLast = activeIndex === ONBOARDING_SLIDES.length - 1;
 
   const scrollToIndex = (index: number) => {
     listRef.current?.scrollToOffset({
@@ -91,11 +45,11 @@ export default function OnboardingScreen() {
   };
 
   const onSkip = () => {
-    scrollToIndex(slides.length - 1);
+    scrollToIndex(ONBOARDING_SLIDES.length - 1);
   };
 
   const onNext = () => {
-    scrollToIndex(Math.min(activeIndex + 1, slides.length - 1));
+    scrollToIndex(Math.min(activeIndex + 1, ONBOARDING_SLIDES.length - 1));
   };
 
   const onGetStarted = () => {
@@ -108,21 +62,22 @@ export default function OnboardingScreen() {
     return (
       <View style={[styles.slide, { width: SCREEN_WIDTH }]}>
         {/* Progress indicator */}
-        <View style={styles.progressRow}>
-          {slides.map((_, i) => {
-            const active = i === activeIndex;
-            return (
-              <View
-                key={i}
-                style={[
-                  styles.progressSegment,
-                  { backgroundColor: active ? colors.black : colors.track },
-                  i !== slides.length - 1 && { marginRight: 10 }, // spacing ONLY between bars
-                ]}
-              />
-            );
-          })}
-        </View>
+       <View style={styles.progressRow}>
+  {ONBOARDING_SLIDES.map((_, i) => {
+    const active = i === activeIndex;
+    return (
+      <View
+        key={i}
+        style={[
+          styles.progressSegment,
+          { backgroundColor: active ? colors.black : colors.track },
+          i !== ONBOARDING_SLIDES.length - 1 && { marginRight: 10 },
+        ]}
+      />
+    );
+  })}
+</View>
+
 
         {/* Main content */}
         <View style={styles.content}>
@@ -147,7 +102,7 @@ export default function OnboardingScreen() {
       <View style={styles.container}>
         <FlatList
           ref={listRef}
-          data={slides}
+          data={ONBOARDING_SLIDES}
           keyExtractor={(item) => item.key}
           renderItem={renderItem}
           horizontal
