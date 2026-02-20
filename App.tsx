@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
-import { AppNavigator } from "./src/navigation/AppNavigator";
+import { AppNavigator } from "@/navigation/AppNavigator";
+
+import * as SplashScreen from "expo-splash-screen";
 
 import {
   useFonts,
@@ -12,6 +14,9 @@ import {
 
 import { View } from "react-native";
 
+//  Prevent native splash from hiding automatically
+SplashScreen.preventAutoHideAsync();
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
@@ -20,7 +25,19 @@ export default function App() {
     Poppins_700Bold,
   });
 
-  // ⛔ Don't render app until fonts are ready
+  //  Hide splash AFTER fonts load + short delay
+  useEffect(() => {
+    const prepare = async () => {
+      if (fontsLoaded) {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await SplashScreen.hideAsync();
+      }
+    };
+
+    prepare();
+  }, [fontsLoaded]);
+
+  //  Keep native splash visible while fonts load
   if (!fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: "#0B0B0B" }} />;
   }
