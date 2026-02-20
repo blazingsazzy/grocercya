@@ -13,36 +13,34 @@ import PhoneInput from "react-native-phone-number-input";
 import CountryPicker, { Country } from "react-native-country-picker-modal";
 import { AsYouType, parsePhoneNumberFromString } from "libphonenumber-js";
 
-import AppText from "../components/AppText";
-import { colors, radius, spacing } from "../themes/themes";
+import AppText from "@/components/AppText";
+import { colors, radius, spacing } from "@/themes/themes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../navigation/AppNavigator";
+import type { RootStackParamList } from "@/navigation/AppNavigator";
 
 type Props = NativeStackScreenProps<RootStackParamList, "GetStarted">;
 
 export default function GetStartedScreen({ navigation }: Props) {
   const phoneRef = useRef<PhoneInput>(null);
 
-  // Default to Nigeria (matches your example use-case)
-  const [countryCode, setCountryCode] = useState<string>("NG"); // ISO2 (cca2)
+  const [countryCode, setCountryCode] = useState<string>("NG");
   const [callingCode, setCallingCode] = useState<string>("234");
 
   const [showHelper, setShowHelper] = useState(false);
 
-  // Stored values (as requested)
-  const [rawNationalDigits, setRawNationalDigits] = useState<string>(""); // digits only (national part)
-  const [displayValue, setDisplayValue] = useState<string>(""); // what user sees (auto formatted)
-  const [phoneE164, setPhoneE164] = useState<string>(""); // +234812...
+  const [rawNationalDigits, setRawNationalDigits] = useState<string>("");
+  const [displayValue, setDisplayValue] = useState<string>("");
+  const [phoneE164, setPhoneE164] = useState<string>("");
 
   const [error, setError] = useState<string>("");
 
   const formatter = useMemo(() => new AsYouType(countryCode as any), [countryCode]);
 
+  const [pickerVisible, setPickerVisible] = useState(false);
+
   const openCountryPicker = () => {
     setPickerVisible(true);
   };
-
-  const [pickerVisible, setPickerVisible] = useState(false);
 
   const onSelectCountry = (c: Country) => {
     setPickerVisible(false);
@@ -53,12 +51,10 @@ export default function GetStartedScreen({ navigation }: Props) {
     setCountryCode(cca2);
     setCallingCode(cc ?? "");
 
-    // Re-format current digits for new country rules
     const digits = rawNationalDigits;
     const nextDisplay = new AsYouType(cca2 as any).input(digits);
     setDisplayValue(nextDisplay);
 
-    // recompute e164 and validate
     const nextE164 = digits ? `+${cc}${digits}` : "";
     setPhoneE164(nextE164);
 
@@ -76,19 +72,15 @@ export default function GetStartedScreen({ navigation }: Props) {
   };
 
   const onChangeNumber = (text: string) => {
-    // keep only digits (numeric keyboard still can include spaces on some devices)
     const digits = text.replace(/\D/g, "");
     setRawNationalDigits(digits);
 
-    // As-you-type formatting for display
     const nextDisplay = new AsYouType(countryCode as any).input(digits);
     setDisplayValue(nextDisplay);
 
-    // Build E.164
     const nextE164 = digits ? `+${callingCode}${digits}` : "";
     setPhoneE164(nextE164);
 
-    // Live validation (error disappears when valid)
     if (!digits) {
       setError("");
       return;
@@ -168,30 +160,24 @@ export default function GetStartedScreen({ navigation }: Props) {
               onPress={openCountryPicker}
               style={({ pressed }) => [styles.countryBox, pressed && styles.pressed]}
             >
-              {/* We use the CountryPicker modal, but render nothing here (we draw our own compact UI) */}
-              <CountryPicker
-                withFilter
-                withFlag
-                withCallingCode
-                withCallingCodeButton={false}
-                withCountryNameButton={false}
-                visible={pickerVisible}
-                onClose={() => setPickerVisible(false)}
-                onSelect={onSelectCountry}
-                countryCode={countryCode as any}
-                
-              />
-
-              <AppText style={styles.flagAndCode}>
-                {/* PhoneInput keeps flags internally, but we prefer simple stable layout here */}
-                {/* CountryPicker will still show flags in the modal list */}
-                +{callingCode}
-              </AppText>
+              <View style={styles.countryInner}>
+                <CountryPicker
+                  withFilter
+                  withFlag
+                  withCallingCode
+                  withCallingCodeButton={false}
+                  withCountryNameButton={false}
+                  visible={pickerVisible}
+                  onClose={() => setPickerVisible(false)}
+                  onSelect={onSelectCountry}
+                  countryCode={countryCode as any}
+                />
+                <AppText style={styles.flagAndCode}>+{callingCode}</AppText>
+              </View>
             </Pressable>
 
-            {/* Right: number input (auto formatted display, numeric keyboard) */}
+            {/* Right: number input */}
             <View style={styles.inputBox}>
-              {/* We keep PhoneInput in the tree to satisfy library use + future extensions */}
               <PhoneInput
                 ref={phoneRef}
                 defaultCode={countryCode as any}
@@ -299,9 +285,13 @@ const styles = StyleSheet.create({
     flex: 0.35,
     borderRadius: 10,
     backgroundColor: "#F3F3F3",
-    alignItems: "center",
-    justifyContent: "center",
     paddingHorizontal: spacing[12],
+    justifyContent: "center",
+  },
+  countryInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   flagAndCode: {
     fontSize: 14,
@@ -346,7 +336,6 @@ const styles = StyleSheet.create({
 
   pressed: { opacity: 0.85 },
 
-  // We keep the PhoneInput mounted (library requirement), but visually hidden.
   hiddenPhoneContainer: { width: 0, height: 0, opacity: 0, position: "absolute" },
   hiddenPhoneTextContainer: { width: 0, height: 0 },
   hiddenPhoneTextInput: { width: 0, height: 0 },
