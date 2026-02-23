@@ -1,7 +1,9 @@
 // src/screens/EnableNotificationScreen.tsx
-import React from "react";
-import { View, StyleSheet, Pressable, StatusBar } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, Pressable, StatusBar, Alert } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Notifications from "expo-notifications";
+import { CommonActions } from "@react-navigation/native";
 
 import AppText from "@/components/AppText";
 import { colors, radius, spacing } from "@/themes/themes";
@@ -15,6 +17,46 @@ type Props = NativeStackScreenProps<RootStackParamList, "EnableNotification">;
 
 export default function EnableNotificationScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
+  const [loading, setLoading] = useState(false);
+
+  const navigateNext = () => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: "MainTabs" }],
+      })
+    );
+  };
+
+  const handleEnableNotifications = async () => {
+    setLoading(true);
+    try {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== "granted") {
+        Alert.alert(
+          "Notifications Blocked",
+          "You can enable notifications later from your device settings.",
+          [{ text: "OK", onPress: () => navigateNext() }]
+        );
+        return;
+      }
+
+      navigateNext();
+    } catch (error) {
+      console.warn("Notification permission error:", error);
+      navigateNext();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
@@ -63,23 +105,25 @@ export default function EnableNotificationScreen({ navigation }: Props) {
         {/* ===== BUTTONS (BOTTOM) ===== */}
         <View style={[styles.bottom, { paddingBottom: insets.bottom + 16 }]}>
           <Pressable
-            disabled
+            onPress={handleEnableNotifications}
+            disabled={loading}
             style={({ pressed }) => [
               styles.primaryBtn,
-              styles.disabledBtn,
+              loading && styles.disabledBtn,
               pressed && styles.pressed,
             ]}
           >
             <AppText variant="medium" style={styles.primaryText}>
-              Enable Notifications
+              {loading ? "Requesting…" : "Enable Notifications"}
             </AppText>
           </Pressable>
 
           <Pressable
-            disabled
+            onPress={navigateNext}
+            disabled={loading}
             style={({ pressed }) => [
               styles.secondaryBtn,
-              styles.disabledBtn,
+              loading && styles.disabledBtn,
               pressed && styles.pressed,
             ]}
           >
@@ -102,7 +146,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[24],
   },
 
-  // Top icons aligned like screenshot
   topBar: {
     paddingTop: spacing[10],
     flexDirection: "row",
@@ -133,7 +176,6 @@ const styles = StyleSheet.create({
   },
   helpIcon: { fontSize: 15, color: "#4A4A4A" },
 
-  
   textBlock: {
     marginTop: spacing[16],
   },
@@ -146,17 +188,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.subtext,
     lineHeight: 18,
-    paddingRight: spacing[28], 
+    paddingRight: spacing[28],
   },
 
-  // SVG centered in the remaining space
   illustrationArea: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
 
-  // Buttons pinned bottom
   bottom: {
     paddingTop: spacing[10],
   },
