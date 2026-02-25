@@ -6,6 +6,7 @@ import OtpScreen from "../screens/Otpscreen";
 import SelectCategoryScreen from "../screens/SelectCategoryScreen";
 import SetLocationScreen from "../screens/SetLocationScreen";
 import EnableNotificationScreen from "../screens/EnableNotificationScreen";
+import TabNavigator            from "@/navigation/TabNavigator";
 
 
 export type RootStackParamList = {
@@ -16,6 +17,7 @@ export type RootStackParamList = {
   SelectCategory: undefined;
   SetLocation: undefined;
   EnableNotification: undefined;
+  MainTabs:            undefined;
 
 
 };
@@ -31,6 +33,7 @@ export function AppNavigator() {
       <Stack.Screen name="SelectCategory" component={SelectCategoryScreen} />
       <Stack.Screen name="SetLocation" component={SetLocationScreen} />
       <Stack.Screen name="EnableNotification" component={EnableNotificationScreen} />
+      <Stack.Screen name="MainTabs"           component={TabNavigator} />
 
       
     </Stack.Navigator>
